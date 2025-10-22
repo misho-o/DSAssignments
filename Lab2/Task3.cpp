@@ -1,44 +1,81 @@
+
+
+//TASK 5: GPA DEPT
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
-// Function to check if two people have a common friend
-bool haveCommonFriend(bool friends[5][5], int a, int b) {
-    for (int k = 0; k < 5; ++k) {
-        if (friends[a][k] && friends[b][k]) {
-            return true;  // Found a common friend
+int main() {
+    int departments;
+    const int subjects = 5;
+
+    cout << "Enter number of departments: ";
+    cin >> departments;
+
+    // Dynamic array of pointers for departments
+    int** studentsInDept = new int*[departments];  // each dept will hold marks of its students
+    int* numStudents = new int[departments];       // to store number of students per department
+
+    // Input number of students per department
+    for (int i = 0; i < departments; ++i) {
+        cout << "Enter number of students in Department " << i + 1 << ": ";
+        cin >> numStudents[i];
+    }
+
+    // Allocate memory for each department
+    for (int i = 0; i < departments; ++i) {
+        studentsInDept[i] = new int[numStudents[i] * subjects]; // each student has 5 subjects
+    }
+
+    // Input marks
+    cout << "\nEnter marks (out of 100) for each student:\n";
+    for (int d = 0; d < departments; ++d) {
+        cout << "\n--- Department " << d + 1 << " ---\n";
+        for (int s = 0; s < numStudents[d]; ++s) {
+            cout << "Student " << s + 1 << ":\n";
+            for (int sub = 0; sub < subjects; ++sub) {
+                cout << "  Subject " << sub + 1 << ": ";
+                cin >> studentsInDept[d][s * subjects + sub];
+            }
         }
     }
-    return false;  // No common friend found
-}
 
-int main() {
-    // 5x5 Boolean matrix representing friendships
-    bool friends[5][5] = {
-        //  0    1    2    3    4
-        {false, true, false, true, false},  // person 0
-        {true, false, true, false, false},  // person 1
-        {false, true, false, false, false}, // person 2
-        {true, false, false, false, true},  // person 3
-        {false, false, false, true, false}  // person 4
-    };
+    cout << "\n===========================================\n";
 
-    cout << "Friendship Matrix (1 = friends, 0 = not friends):\n";
-    for (int i = 0; i < 5; ++i) {
-        for (int j = 0; j < 5; ++j)
-            cout << friends[i][j] << " ";
-        cout << endl;
+    // Calculate and display stats per department
+    for (int d = 0; d < departments; ++d) {
+        int highest = 0, lowest = 9999;
+        double totalDeptMarks = 0;
+
+        for (int s = 0; s < numStudents[d]; ++s) {
+            int totalStudent = 0;
+            for (int sub = 0; sub < subjects; ++sub)
+                totalStudent += studentsInDept[d][s * subjects + sub];
+
+            if (totalStudent > highest)
+                highest = totalStudent;
+            if (totalStudent < lowest)
+                lowest = totalStudent;
+
+            totalDeptMarks += totalStudent;
+        }
+
+        double avgDept = totalDeptMarks / numStudents[d];
+
+        cout << fixed << setprecision(2);
+        cout << "\nDepartment " << d + 1 << " Statistics:\n";
+        cout << "  Highest Total Marks: " << highest << endl;
+        cout << "  Lowest Total Marks : " << lowest << endl;
+        cout << "  Average Total Marks: " << avgDept << endl;
     }
 
-    cout << "\nChecking common friends:\n";
-    cout << "Do 0 and 4 have a common friend? ";
-    cout << (haveCommonFriend(friends, 0, 4) ? "Yes" : "No") << endl;
+    cout << "\n===========================================\n";
 
-    cout << "Do 1 and 2 have a common friend? ";
-    cout << (haveCommonFriend(friends, 1, 2) ? "Yes" : "No") << endl;
-
-    cout << "Do 0 and 1 have a common friend? ";
-    cout << (haveCommonFriend(friends, 0, 1) ? "Yes" : "No") << endl;
+    // Free memory
+    for (int i = 0; i < departments; ++i)
+        delete[] studentsInDept[i];
+    delete[] studentsInDept;
+    delete[] numStudents;
 
     return 0;
 }
-
