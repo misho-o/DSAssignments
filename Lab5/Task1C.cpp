@@ -1,43 +1,61 @@
 #include <iostream>
-#include <cstdlib>  
-#include <ctime>    
 using namespace std;
 
+#define N 4
 
-void guessNumber(int secret, int currentPlayer, int totalPlayers) {
-    int guess;
-    cout << "Player " << currentPlayer << ", enter your guess (1–100): ";
-    cin >> guess;
+bool isSafe(int maze[N][N], int x, int y) {
+    return (x >= 0 && x < N && y >= 0 && y < N && maze[x][y] == 1);
+}
 
-    if (guess == secret) {
-        cout << "?? Player " << currentPlayer << " guessed it right! The number was " << secret << "!\n";
-        return; 
-    } 
-    else if (guess < secret) {
-        cout << "Too low!\n";
-    } 
-    else {
-        cout << "Too high!\n";
+bool solveMazeRec(int maze[N][N], int x, int y, int sol[N][N]) {
+    // If destination is reached
+    if (x == N - 1 && y == N - 1 && maze[x][y] == 1) {
+        sol[x][y] = 1;
+        return true;
     }
 
-    
-    int nextPlayer = (currentPlayer % totalPlayers) + 1;
+    // Check if maze[x][y] is valid
+    if (isSafe(maze, x, y)) {
+        sol[x][y] = 1;  // mark this cell in solution path
 
-    
-    guessNumber(secret, nextPlayer, totalPlayers);
+        // Move down
+        if (solveMazeRec(maze, x + 1, y, sol))
+            return true;
+
+        // Move right
+        if (solveMazeRec(maze, x, y + 1, sol))
+            return true;
+
+        // Backtrack: unmark this cell
+        sol[x][y] = 0;
+        return false;
+    }
+
+    return false;
+}
+
+void printSolution(int sol[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++)
+            cout << sol[i][j] << " ";
+        cout << endl;
+    }
 }
 
 int main() {
-    srand(time(0)); 
-    int secret = rand() % 100 + 1;
+    int maze[N][N] = {
+        {1, 0, 0, 0},
+        {1, 1, 0, 1},
+        {0, 1, 0, 0},
+        {1, 1, 1, 1}
+    };
 
-    int players;
-    cout << "Enter number of players: ";
-    cin >> players;
+    int sol[N][N] = {0};  // initialize empty solution matrix
 
-    cout << "\n--- Number Guessing Game ---\n";
-    guessNumber(secret, 1, players);
+    if (solveMazeRec(maze, 0, 0, sol))
+        printSolution(sol);
+    else
+        cout << "No path found!" << endl;
 
     return 0;
 }
-
