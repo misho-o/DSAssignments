@@ -1,98 +1,106 @@
 #include <iostream>
 using namespace std;
-
-//TASK 6
+//TASK 5:
 struct Node {
-    int data;
+    char data;       
+    
     Node* next;
-    Node(int val) {
+    Node(char val) {
         data = val;
         next = NULL;
     }
 };
 
 
-void insertEnd(Node*& head, int val) {
+void insertEnd(Node*& head, char val) {
     Node* newNode = new Node(val);
     if (!head) {
         head = newNode;
         return;
     }
     Node* temp = head;
-    while (temp->next != NULL)
+    while (temp->next)
         temp = temp->next;
     temp->next = newNode;
 }
 
 
 void display(Node* head) {
-    if (!head) {
-        cout << "List is empty.\n";
-        return;
-    }
-    Node* temp = head;
-    while (temp) {
-        cout << temp->data;
-        if (temp->next) cout << " -> ";
-        temp = temp->next;
+    while (head) {
+        cout << head->data;
+        if (head->next) cout << " -> ";
+        head = head->next;
     }
     cout << " -> NULL\n";
 }
 
-void deleteValue(Node*& head, int val) {
-    if (!head) {
-        cout << "List is empty.\n";
-        return;
+// Reverse a linked list
+Node* reverseList(Node* head) {
+    Node* prev = NULL;
+    Node* curr = head;
+    Node* next = NULL;
+
+    while (curr) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}
+
+bool isPalindrome(Node* head) {
+    if (!head || !head->next)
+        return true;
+
+    Node* slow = head;
+    Node* fast = head;
+
+    
+    while (fast->next && fast->next->next) {
+        slow = slow->next;
+        fast = fast->next->next;
     }
 
     
-    if (head->data == val) {
-        Node* toDelete = head;
-        head = head->next;
-        delete toDelete;
-        cout << val << " deleted from the list.\n";
-        return;
-    }
+    Node* secondHalf = reverseList(slow->next);
 
-    Node* temp = head;
-    while (temp->next != NULL && temp->next->data != val)
+    
+    Node* firstHalf = head;
+    Node* temp = secondHalf;
+    bool palindrome = true;
+
+    while (temp) {
+        if (firstHalf->data != temp->data) {
+            palindrome = false;
+            break;
+        }
+        firstHalf = firstHalf->next;
         temp = temp->next;
-
-    if (temp->next == NULL) {
-        cout << "Value " << val << " not found in the list.\n";
-        return;
     }
 
-    Node* toDelete = temp->next;
-    temp->next = temp->next->next;
-    delete toDelete;
+    slow->next = reverseList(secondHalf);
 
-    cout << val << " deleted from the list.\n";
+    return palindrome;
 }
 
 int main() {
     Node* head = NULL;
 
-    
-    int arr[] = {10, 20, 30, 40, 50};
-    for (int i =0;i<5;i++){
-        insertEnd(head, arr[i]);
-    	
+    char arr[] = {'B', 'O', 'R', 'R', 'O', 'W', 'O', 'R', 'R', 'O', 'B'};
+
+    for (int i =0;i<11;i++){
+    	insertEnd(head, arr[i]);
 	}
-    
+        
 
-    cout << "Original List:\n";
+    cout << "Linked List:\n";
     display(head);
 
-    int val;
-    cout << "\nEnter value to delete: ";
-    cin >> val;
-
-    deleteValue(head, val);
-
-    cout << "\nUpdated List:\n";
-    display(head);
+    if (isPalindrome(head))
+        cout << "\nLinked List is a Palindrome.\n";
+    else
+        cout << "\nLinked List is NOT a Palindrome.\n";
 
     return 0;
 }
-
