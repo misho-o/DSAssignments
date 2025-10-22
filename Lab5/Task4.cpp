@@ -1,28 +1,45 @@
 #include <iostream>
-#include <vector>
 using namespace std;
 
-int sumJagged(const vector<vector<int>>& arr, int row = 0) {
+struct Node {
+    int data;
+    Node* next;
+};
 
-    if (row == arr.size())
-        return 0;
 
-    int rowSum = 0;
-    for (int val : arr[row])
-        rowSum += val;
+bool searchTail(Node* head, int key) {
+    if (head == NULL)
+        return false;
+    if (head->data == key)
+        return true;
+    return searchTail(head->next, key);
+}
+bool searchNonTail(Node* head, int key) {
+  
+    if (head == NULL)
+        return false;
+        
+    if (head->data == key)
+        return true;
 
-    return rowSum + sumJagged(arr, row + 1);
+
+    bool foundInRest = searchNonTail(head->next, key);
+
+    return foundInRest;
 }
 
-int main() {
-    vector<vector<int>> arr = {
-        {1, 2, 3},
-        {4, 5},
-        {6, 7, 8, 9}
-    };
 
-    cout << "Sum of all elements: " << sumJagged(arr) << endl;
+int main() {
+    
+    Node* head = new Node{5, NULL};
+    head->next = new Node{10, NULL};
+    head->next->next = new Node{15, NULL};
+
+    int key = 10;
+    if (searchNonTail(head, key))
+        cout << key << " found in the list.\n";
+    else
+        cout << key << " not found in the list.\n";
 
     return 0;
 }
-
