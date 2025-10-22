@@ -1,134 +1,83 @@
-#include <iostream>
-#include <string>
-using namespace std;
 
-struct Passenger {
-    string name;
-    Passenger* next;
-    Passenger(string n) {
-        name = n;
+#include <iostream>
+using namespace std;
+//TASK 2
+struct Node {
+    int value;
+    Node* next;
+    Node(int val) {
+        value = val;
         next = NULL;
     }
 };
 
-void reserveTicket(Passenger*& head, string name) {
-    Passenger* newNode = new Passenger(name);
-
-    if (head == NULL || name < head->name) {
-        newNode->next = head;
+void insertEnd(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    if (head == NULL) {
         head = newNode;
-        cout << name << " has reserved a ticket.\n";
         return;
     }
-
-    Passenger* temp = head;
-    while (temp->next != NULL && temp->next->name < name)
+    Node* temp = head;
+    while (temp->next != NULL)
         temp = temp->next;
-
-    newNode->next = temp->next;
     temp->next = newNode;
-
-    cout << name << " has reserved a ticket.\n";
 }
 
-// Cancel reservation
-void cancelReservation(Passenger*& head, string name) {
-    if (head == NULL) {
-        cout << "No reservations found.\n";
-        return;
-    }
-
-    if (head->name == name) {
-        Passenger* toDelete = head;
-        head = head->next;
-        delete toDelete;
-        cout << name << "'s reservation cancelled.\n";
-        return;
-    }
-
-    Passenger* temp = head;
-    while (temp->next != NULL && temp->next->name != name)
-        temp = temp->next;
-
-    if (temp->next == NULL) {
-        cout << "Reservation not found for " << name << ".\n";
-        return;
-    }
-
-    Passenger* toDelete = temp->next;
-    temp->next = toDelete->next;
-    delete toDelete;
-    cout << name << "'s reservation cancelled.\n";
-}
-
-void checkReservation(Passenger* head, string name) {
-    Passenger* temp = head;
+void display(Node* head) {
+    Node* temp = head;
     while (temp != NULL) {
-        if (temp->name == name) {
-            cout << name << " has a reservation.\n";
-            return;
-        }
-        temp = temp->next;
-    }
-    cout << name << " does not have a reservation.\n";
-}
-
-void displayPassengers(Passenger* head) {
-    if (head == NULL) {
-        cout << "No passengers reserved.\n";
-        return;
-    }
-    cout << "\nList of passengers:\n";
-    Passenger* temp = head;
-    while (temp != NULL) {
-        cout << "- " << temp->name << endl;
+        cout << temp->value << " ";
         temp = temp->next;
     }
     cout << endl;
 }
 
+// Function to rotate the list
+void rotateList(Node*& head, int k) {
+    if (!head || k == 0) return;
+
+    // Count total nodes
+    Node* temp = head;
+    int count = 1;
+    while (temp->next != NULL) {
+        temp = temp->next;
+        count++;
+    }
+
+    // Connect last node to head (make circular)
+    temp->next = head;
+
+    // If k >= count, adjust
+    k = k % count;
+
+    // Traverse to the node before new head
+    int steps = count - k;
+    Node* newTail = head;
+    for (int i = 1; i < steps; i++)
+        newTail = newTail->next;
+
+    head = newTail->next;
+    newTail->next = NULL;
+}
+
 int main() {
-    Passenger* head = NULL;
-    int choice;
-    string name;
+    Node* head = NULL;
 
-    do {
-        cout << "\n--- Airline Reservation Menu ---\n";
-        cout << "1. Reserve a ticket\n";
-        cout << "2. Cancel a reservation\n";
-        cout << "3. Check reservation\n";
-        cout << "4. Display passengers\n";
-        cout << "5. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
+    int values[] = {5, 3, 1, 8, 6, 4, 2};
+    for (int v=0;v<7;v++)
+        insertEnd(head, v);
 
-        switch (choice) {
-        case 1:
-            cout << "Enter passenger name: ";
-            cin >> name;
-            reserveTicket(head, name);
-            break;
-        case 2:
-            cout << "Enter passenger name to cancel: ";
-            cin >> name;
-            cancelReservation(head, name);
-            break;
-        case 3:
-            cout << "Enter passenger name to check: ";
-            cin >> name;
-            checkReservation(head, name);
-            break;
-        case 4:
-            displayPassengers(head);
-            break;
-        case 5:
-            cout << "Exiting program.\n";
-            break;
-        default:
-            cout << "Invalid choice. Try again.\n";
-        }
-    } while (choice != 5);
+    cout << "Original list: ";
+    display(head);
+
+    int k;
+    cout << "Enter number of elements to move: ";
+    cin >> k;
+
+    rotateList(head, k);
+
+    cout << "After rotation: ";
+    display(head);
 
     return 0;
 }
-
