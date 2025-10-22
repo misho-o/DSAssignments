@@ -1,29 +1,39 @@
+
 #include <iostream>
 using namespace std;
 
-struct Node {
+struct node {
     int value;
-    Node* next;
-    Node(int val) {
-        value = val;
+    node* next;
+
+    node() {
+        value = 0;
         next = NULL;
     }
 };
 
-void insertEnd(Node*& head, int val) {
-    Node* newNode = new Node(val);
-    if (head == NULL) {
-        head = newNode;
-        return;
+
+void arrToList(int arr[], int size, node*& head) {
+    node* temp = head;
+
+    for (int i = 0; i < size; i++) {
+        node* newNode = new node;
+        newNode->value = arr[i];
+        newNode->next = NULL;
+
+        if (head == NULL) {
+            head = newNode;
+            temp = head;
+        } else {
+            temp->next = newNode;
+            temp = temp->next;
+        }
     }
-    Node* temp = head;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = newNode;
 }
 
-void display(Node* head) {
-    Node* temp = head;
+
+void display(node* head) {
+    node* temp = head;
     while (temp != NULL) {
         cout << temp->value << " ";
         temp = temp->next;
@@ -31,51 +41,12 @@ void display(Node* head) {
     cout << endl;
 }
 
-// Function to rotate the list
-void rotateList(Node*& head, int k) {
-    if (!head || k == 0) return;
-
-    // Count total nodes
-    Node* temp = head;
-    int count = 1;
-    while (temp->next != NULL) {
-        temp = temp->next;
-        count++;
-    }
-
-    // Connect last node to head (make circular)
-    temp->next = head;
-
-    // If k >= count, adjust
-    k = k % count;
-
-    // Traverse to the node before new head
-    int steps = count - k;
-    Node* newTail = head;
-    for (int i = 1; i < steps; i++)
-        newTail = newTail->next;
-
-    head = newTail->next;
-    newTail->next = NULL;
-}
-
 int main() {
-    Node* head = NULL;
+    int num[5] = {1, 2, 3, 4, 5};
 
-    int values[] = {5, 3, 1, 8, 6, 4, 2};
-    for (int v=0;v<7;v++)
-        insertEnd(head, v);
+    node* head = NULL;
 
-    cout << "Original list: ";
-    display(head);
-
-    int k;
-    cout << "Enter number of elements to move: ";
-    cin >> k;
-
-    rotateList(head, k);
-
-    cout << "After rotation: ";
+    arrToList(num, 5, head);
     display(head);
 
     return 0;
