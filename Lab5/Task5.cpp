@@ -1,62 +1,30 @@
+
 #include <iostream>
+#include <vector>
 using namespace std;
 
-#define N 4
+int sumJagged(const vector<vector<int>>& arr, int row = 0) {
 
-bool isSafe(int maze[N][N], int x, int y) {
-    return (x >= 0 && x < N && y >= 0 && y < N && maze[x][y] == 1);
-}
+    if (row == arr.size())
+        return 0;
 
-bool solveMazeRec(int maze[N][N], int x, int y, int sol[N][N]) {
-    // If destination is reached
-    if (x == N - 1 && y == N - 1 && maze[x][y] == 1) {
-        sol[x][y] = 1;
-        return true;
-    }
+    int rowSum = 0;
+    for (int val : arr[row])
+        rowSum += val;
 
-    // Check if maze[x][y] is valid
-    if (isSafe(maze, x, y)) {
-        sol[x][y] = 1;  // mark this cell in solution path
-
-        // Move down
-        if (solveMazeRec(maze, x + 1, y, sol))
-            return true;
-
-        // Move right
-        if (solveMazeRec(maze, x, y + 1, sol))
-            return true;
-
-        // Backtrack: unmark this cell
-        sol[x][y] = 0;
-        return false;
-    }
-
-    return false;
-}
-
-void printSolution(int sol[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++)
-            cout << sol[i][j] << " ";
-        cout << endl;
-    }
+    return rowSum + sumJagged(arr, row + 1);
 }
 
 int main() {
-    int maze[N][N] = {
-        {1, 0, 0, 0},
-        {1, 1, 0, 1},
-        {0, 1, 0, 0},
-        {1, 1, 1, 1}
+    vector<vector<int>> arr = {
+        {1, 2, 3},
+        {4, 5},
+        {6, 7, 8, 9}
     };
 
-    int sol[N][N] = {0};  // initialize empty solution matrix
-
-    if (solveMazeRec(maze, 0, 0, sol))
-        printSolution(sol);
-    else
-        cout << "No path found!" << endl;
+    cout << "Sum of all elements: " << sumJagged(arr) << endl;
 
     return 0;
 }
+
 
