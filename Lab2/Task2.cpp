@@ -1,79 +1,71 @@
+
+//TASK 2:SCHOOL MANAGEMNT
 #include <iostream>
-#include <iomanip>
 using namespace std;
 
 int main() {
-    int departments;
-    const int subjects = 5;
+    int students = 5, subjects = 4;
 
-    cout << "Enter number of departments: ";
-    cin >> departments;
+    
+    int** marks = new int*[students];
+    for (int i = 0; i < students; ++i)
+        marks[i] = new int[subjects];
 
-    // Dynamic array of pointers for departments
-    int** studentsInDept = new int*[departments];  // each dept will hold marks of its students
-    int* numStudents = new int[departments];       // to store number of students per department
-
-    // Input number of students per department
-    for (int i = 0; i < departments; ++i) {
-        cout << "Enter number of students in Department " << i + 1 << ": ";
-        cin >> numStudents[i];
-    }
-
-    // Allocate memory for each department
-    for (int i = 0; i < departments; ++i) {
-        studentsInDept[i] = new int[numStudents[i] * subjects]; // each student has 5 subjects
-    }
-
-    // Input marks
-    cout << "\nEnter marks (out of 100) for each student:\n";
-    for (int d = 0; d < departments; ++d) {
-        cout << "\n--- Department " << d + 1 << " ---\n";
-        for (int s = 0; s < numStudents[d]; ++s) {
-            cout << "Student " << s + 1 << ":\n";
-            for (int sub = 0; sub < subjects; ++sub) {
-                cout << "  Subject " << sub + 1 << ": ";
-                cin >> studentsInDept[d][s * subjects + sub];
-            }
+    
+    cout << "Enter marks for " << students << " students in " << subjects << " subjects:\n";
+    for (int i = 0; i < students; ++i) {
+        cout << "\nStudent " << i + 1 << ":\n";
+        for (int j = 0; j < subjects; ++j) {
+            cout << "  Subject " << j + 1 << ": ";
+            cin >> marks[i][j];
         }
     }
 
-    cout << "\n===========================================\n";
+    cout << "\n-------------------------------\n";
 
-    // Calculate and display stats per department
-    for (int d = 0; d < departments; ++d) {
-        int highest = 0, lowest = 9999;
-        double totalDeptMarks = 0;
+    // Calculate total marks per student
+    int* totalMarks = new int[students];
+    int topperIndex = 0;
+    int highestTotal = 0;
 
-        for (int s = 0; s < numStudents[d]; ++s) {
-            int totalStudent = 0;
-            for (int sub = 0; sub < subjects; ++sub)
-                totalStudent += studentsInDept[d][s * subjects + sub];
+    for (int i = 0; i < students; ++i) {
+        totalMarks[i] = 0;
+        for (int j = 0; j < subjects; ++j)
+            totalMarks[i] += marks[i][j];
 
-            if (totalStudent > highest)
-                highest = totalStudent;
-            if (totalStudent < lowest)
-                lowest = totalStudent;
+        cout << "Total marks of Student " << i + 1 << " = " << totalMarks[i] << endl;
 
-            totalDeptMarks += totalStudent;
+        // Find topper
+        if (totalMarks[i] > highestTotal) {
+            highestTotal = totalMarks[i];
+            topperIndex = i;
         }
-
-        double avgDept = totalDeptMarks / numStudents[d];
-
-        cout << fixed << setprecision(2);
-        cout << "\nDepartment " << d + 1 << " Statistics:\n";
-        cout << "  Highest Total Marks: " << highest << endl;
-        cout << "  Lowest Total Marks : " << lowest << endl;
-        cout << "  Average Total Marks: " << avgDept << endl;
     }
 
-    cout << "\n===========================================\n";
+    cout << "\n-------------------------------\n";
 
-    // Free memory
-    for (int i = 0; i < departments; ++i)
-        delete[] studentsInDept[i];
-    delete[] studentsInDept;
-    delete[] numStudents;
+   
+    cout << "Average marks per subject:\n";
+    for (int j = 0; j < subjects; ++j) {
+        double subjectTotal = 0;
+        for (int i = 0; i < students; ++i)
+            subjectTotal += marks[i][j];
+        cout << "Subject " << j + 1 << " average = " << subjectTotal / students << endl;
+    }
+
+    cout << "\n-------------------------------\n";
+
+
+    cout << "Topper Student: Student " << topperIndex + 1
+         << " with total marks = " << highestTotal << endl;
+
+    cout << "-------------------------------\n";
+
+    // Free dynamically allocated memory
+    for (int i = 0; i < students; ++i)
+        delete[] marks[i];
+    delete[] marks;
+    delete[] totalMarks;
 
     return 0;
 }
-
