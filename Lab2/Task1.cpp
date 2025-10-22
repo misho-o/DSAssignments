@@ -54,7 +54,6 @@ public:
                 transposed[i][j] = matrix[j][i];
         }
 
-        // Free old memory
         for (int i = 0; i < rows; ++i)
             delete[] matrix[i];
         delete[] matrix;
@@ -64,7 +63,6 @@ public:
         swap(rows, cols);
     }
 
-    // Add 2 to elements at odd indices
     void addTwoToOddIndices() {
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < cols; ++j)
@@ -72,7 +70,6 @@ public:
                     matrix[i][j] += 2;
     }
 
-    // Print matrix
     void printMatrix() {
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j)
@@ -81,7 +78,7 @@ public:
         }
     }
 
-    // Destructor
+    
     ~DynamicMatrix() {
         for (int i = 0; i < rows; ++i)
             delete[] matrix[i];
@@ -89,6 +86,7 @@ public:
     }
 };
 
+//  to test
 int main() {
     int r = 3, c = 3;
     DynamicMatrix mat(r, c);
