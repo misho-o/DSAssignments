@@ -1,96 +1,134 @@
-#include <iostream>
-using namespace std;
 
-struct Node {
-    int data;
-    Node* next;
-    Node(int val) {
-        data = val;
+#include <iostream>
+#include <string>
+using namespace std;
+//TASK 3:
+struct Passenger {
+    string name;
+    Passenger* next;
+    Passenger(string n) {
+        name = n;
         next = NULL;
     }
 };
 
-// Function to insert a node at end
-void insertEnd(Node*& head, int val) {
-    Node* newNode = new Node(val);
-    if (head == NULL) {
+void reserveTicket(Passenger*& head, string name) {
+    Passenger* newNode = new Passenger(name);
+
+    if (head == NULL || name < head->name) {
+        newNode->next = head;
         head = newNode;
+        cout << name << " has reserved a ticket.\n";
         return;
     }
-    Node* temp = head;
-    while (temp->next != NULL)
+
+    Passenger* temp = head;
+    while (temp->next != NULL && temp->next->name < name)
         temp = temp->next;
+
+    newNode->next = temp->next;
     temp->next = newNode;
+
+    cout << name << " has reserved a ticket.\n";
 }
 
-// Function to display the list
-void display(Node* head) {
-    while (head != NULL) {
-        cout << head->data;
-        if (head->next) cout << " -> ";
-        head = head->next;
+// Cancel reservation
+void cancelReservation(Passenger*& head, string name) {
+    if (head == NULL) {
+        cout << "No reservations found.\n";
+        return;
     }
-    cout << " -> NULL\n";
+
+    if (head->name == name) {
+        Passenger* toDelete = head;
+        head = head->next;
+        delete toDelete;
+        cout << name << "'s reservation cancelled.\n";
+        return;
+    }
+
+    Passenger* temp = head;
+    while (temp->next != NULL && temp->next->name != name)
+        temp = temp->next;
+
+    if (temp->next == NULL) {
+        cout << "Reservation not found for " << name << ".\n";
+        return;
+    }
+
+    Passenger* toDelete = temp->next;
+    temp->next = toDelete->next;
+    delete toDelete;
+    cout << name << "'s reservation cancelled.\n";
 }
 
-// Function to arrange even numbers before odd numbers
-void arrangeEvenOdd(Node*& head) {
-    if (!head) return;
-
-    Node* evenHead = NULL;
-    Node* evenTail = NULL;
-    Node* oddHead = NULL;
-    Node* oddTail = NULL;
-    Node* temp = head;
-
+void checkReservation(Passenger* head, string name) {
+    Passenger* temp = head;
     while (temp != NULL) {
-        if (temp->data % 2 == 0) {
-            // Even number
-            if (evenHead == NULL) {
-                evenHead = evenTail = temp;
-            } else {
-                evenTail->next = temp;
-                evenTail = evenTail->next;
-            }
-        } else {
-            // Odd number
-            if (oddHead == NULL) {
-                oddHead = oddTail = temp;
-            } else {
-                oddTail->next = temp;
-                oddTail = oddTail->next;
-            }
+        if (temp->name == name) {
+            cout << name << " has a reservation.\n";
+            return;
         }
         temp = temp->next;
     }
+    cout << name << " does not have a reservation.\n";
+}
 
-    // If there are no evens or no odds
-    if (evenHead == NULL || oddHead == NULL)
+void displayPassengers(Passenger* head) {
+    if (head == NULL) {
+        cout << "No passengers reserved.\n";
         return;
-
-    // Join even and odd lists
-    evenTail->next = oddHead;
-    oddTail->next = NULL;
-    head = evenHead;
+    }
+    cout << "\nList of passengers:\n";
+    Passenger* temp = head;
+    while (temp != NULL) {
+        cout << "- " << temp->name << endl;
+        temp = temp->next;
+    }
+    cout << endl;
 }
 
 int main() {
-    Node* head = NULL;
+    Passenger* head = NULL;
+    int choice;
+    string name;
 
-    // Example input
-    int arr[] = {17, 15, 8, 12, 10, 5, 4, 1, 7, 6};
-    for (int i = 0;i<10;i++){
-    	insertEnd(head, arr[i]);
-	}
-        
+    do {
+        cout << "\n--- Airline Reservation Menu ---\n";
+        cout << "1. Reserve a ticket\n";
+        cout << "2. Cancel a reservation\n";
+        cout << "3. Check reservation\n";
+        cout << "4. Display passengers\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
 
-    cout << "Original List:\n";
-    display(head);
-
-    arrangeEvenOdd(head);
-
-    cout << "\nModified List (Even before Odd):\n";
-    display(head);
+        switch (choice) {
+        case 1:
+            cout << "Enter passenger name: ";
+            cin >> name;
+            reserveTicket(head, name);
+            break;
+        case 2:
+            cout << "Enter passenger name to cancel: ";
+            cin >> name;
+            cancelReservation(head, name);
+            break;
+        case 3:
+            cout << "Enter passenger name to check: ";
+            cin >> name;
+            checkReservation(head, name);
+            break;
+        case 4:
+            displayPassengers(head);
+            break;
+        case 5:
+            cout << "Exiting program.\n";
+            break;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 5);
 
     return 0;
 }
