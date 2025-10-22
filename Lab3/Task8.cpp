@@ -1,93 +1,92 @@
 #include <iostream>
 using namespace std;
-
+//TASK 8
 struct Node {
     int data;
+    Node* prev;
     Node* next;
     Node(int val) {
         data = val;
-        next = NULL;
+        prev = next = NULL;
+    }
+};
+
+struct DoublyLinkedList {
+    Node* head;
+    Node* tail;
+
+    DoublyLinkedList() {
+        head = tail = NULL;
+    }
+
+    void insertEnd(int val) {
+        Node* newNode = new Node(val);
+        if (!head) {
+            head = tail = newNode;
+        } else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode;
+        }
+    }
+
+    void display() {
+        Node* temp = head;
+        while (temp) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
     }
 };
 
 
-void insertEnd(Node*& head, int val) {
-    Node* newNode = new Node(val);
-    if (!head) {
-        head = newNode;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next)
-        temp = temp->next;
-    temp->next = newNode;
-}
+DoublyLinkedList concatenate(DoublyLinkedList& L, DoublyLinkedList& M) {
+    DoublyLinkedList result;
+    //DIFFERENT CASE
+    // If L is empty
+    if (!L.head)
+        return M;
 
+    // If M is empty
+    if (!M.head)
+        return L;
 
-void printList(Node* head) {
-    while (head) {
-        cout << head->data << " ";
-        head = head->next;
-    }
-    cout << endl;
-}
+    // Link L.tail -> M.head
+    L.tail->next = M.head;
+    M.head->prev = L.tail;
 
-// Reverse a linked list
-Node* reverseList(Node* head) {
-    Node* prev = NULL;
-    Node* curr = head;
-    Node* next = NULL;
-    while (curr) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
-    }
-    return prev;
-}
+    // Set result head and tail
+    result.head = L.head;
+    result.tail = M.tail;
 
-// Perform the required operation
-void rearrangeList(Node*& head) {
-    if (!head || !head->next)
-        return;
-
-    Node* odd = head;
-    Node* even = head->next;
-    Node* evenHead = even; // Start of alternate nodes
-
-    // Separate the alternate nodes
-    while (odd->next && even->next) {
-        odd->next = even->next;
-        odd = odd->next;
-        even->next = odd->next;
-        even = even->next;
-    }
-
-    
-    evenHead = reverseList(evenHead);
-
-    
-    odd->next = evenHead;
+    return result;
 }
 
 int main() {
-    Node* head = NULL;
+    DoublyLinkedList L, M;
 
-    insertEnd(head, 10);
-    insertEnd(head, 4);
-    insertEnd(head, 9);
-    insertEnd(head, 1);
-    insertEnd(head, 3);
     
+    L.insertEnd(1);
+    L.insertEnd(2);
+    L.insertEnd(3);
 
-    cout << "Original list: ";
-    printList(head);
+    
+    M.insertEnd(4);
+    M.insertEnd(5);
+    M.insertEnd(6);
 
-    rearrangeList(head);
+    cout << "List L: ";
+    L.display();
 
-    cout << "Modified list: ";
-    printList(head);
+    cout << "List M: ";
+    M.display();
+
+    // :)
+    DoublyLinkedList result = concatenate(L, M);
+
+    cout << "\nAfter concatenation: ";
+    result.display();
 
     return 0;
 }
-
