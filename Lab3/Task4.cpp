@@ -1,32 +1,32 @@
+
 #include <iostream>
 using namespace std;
-
+//TASK 4
 struct Node {
-    char data;       
-    
+    int data;
     Node* next;
-    Node(char val) {
+    Node(int val) {
         data = val;
         next = NULL;
     }
 };
 
-
-void insertEnd(Node*& head, char val) {
+// Function to insert a node at end
+void insertEnd(Node*& head, int val) {
     Node* newNode = new Node(val);
-    if (!head) {
+    if (head == NULL) {
         head = newNode;
         return;
     }
     Node* temp = head;
-    while (temp->next)
+    while (temp->next != NULL)
         temp = temp->next;
     temp->next = newNode;
 }
 
-
+// Function to display the list
 void display(Node* head) {
-    while (head) {
+    while (head != NULL) {
         cout << head->data;
         if (head->next) cout << " -> ";
         head = head->next;
@@ -34,73 +34,64 @@ void display(Node* head) {
     cout << " -> NULL\n";
 }
 
-// Reverse a linked list
-Node* reverseList(Node* head) {
-    Node* prev = NULL;
-    Node* curr = head;
-    Node* next = NULL;
+// Function to arrange even numbers before odd numbers
+void arrangeEvenOdd(Node*& head) {
+    if (!head) return;
 
-    while (curr) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
-    }
-    return prev;
-}
+    Node* evenHead = NULL;
+    Node* evenTail = NULL;
+    Node* oddHead = NULL;
+    Node* oddTail = NULL;
+    Node* temp = head;
 
-bool isPalindrome(Node* head) {
-    if (!head || !head->next)
-        return true;
-
-    Node* slow = head;
-    Node* fast = head;
-
-    
-    while (fast->next && fast->next->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-
-    
-    Node* secondHalf = reverseList(slow->next);
-
-    
-    Node* firstHalf = head;
-    Node* temp = secondHalf;
-    bool palindrome = true;
-
-    while (temp) {
-        if (firstHalf->data != temp->data) {
-            palindrome = false;
-            break;
+    while (temp != NULL) {
+        if (temp->data % 2 == 0) {
+            // Even number
+            if (evenHead == NULL) {
+                evenHead = evenTail = temp;
+            } else {
+                evenTail->next = temp;
+                evenTail = evenTail->next;
+            }
+        } else {
+            // Odd number
+            if (oddHead == NULL) {
+                oddHead = oddTail = temp;
+            } else {
+                oddTail->next = temp;
+                oddTail = oddTail->next;
+            }
         }
-        firstHalf = firstHalf->next;
         temp = temp->next;
     }
 
-    slow->next = reverseList(secondHalf);
+    // If there are no evens or no odds
+    if (evenHead == NULL || oddHead == NULL)
+        return;
 
-    return palindrome;
+    // Join even and odd lists
+    evenTail->next = oddHead;
+    oddTail->next = NULL;
+    head = evenHead;
 }
 
 int main() {
     Node* head = NULL;
 
-    char arr[] = {'B', 'O', 'R', 'R', 'O', 'W', 'O', 'R', 'R', 'O', 'B'};
-
-    for (int i =0;i<11;i++){
+    // Example input
+    int arr[] = {17, 15, 8, 12, 10, 5, 4, 1, 7, 6};
+    for (int i = 0;i<10;i++){
     	insertEnd(head, arr[i]);
 	}
         
 
-    cout << "Linked List:\n";
+    cout << "Original List:\n";
     display(head);
 
-    if (isPalindrome(head))
-        cout << "\nLinked List is a Palindrome.\n";
-    else
-        cout << "\nLinked List is NOT a Palindrome.\n";
+    arrangeEvenOdd(head);
+
+    cout << "\nModified List (Even before Odd):\n";
+    display(head);
 
     return 0;
 }
