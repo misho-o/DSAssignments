@@ -1,6 +1,9 @@
+
+
 #include <iostream>
 using namespace std;
-//TASK 7
+
+//TASK 6
 struct Node {
     int data;
     Node* next;
@@ -11,145 +14,86 @@ struct Node {
 };
 
 
+void insertEnd(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    if (!head) {
+        head = newNode;
+        return;
+    }
+    Node* temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+    temp->next = newNode;
+}
+
+
 void display(Node* head) {
     if (!head) {
         cout << "List is empty.\n";
         return;
     }
     Node* temp = head;
-    do {
-        cout << temp->data << " -> ";
+    while (temp) {
+        cout << temp->data;
+        if (temp->next) cout << " -> ";
         temp = temp->next;
-    } while (temp != head);
-    cout << "(back to head)\n";
+    }
+    cout << " -> NULL\n";
 }
 
-// a. Insert at end
-void insertEnd(Node*& head, int val) {
-    Node* newNode = new Node(val);
-    if (!head) {
-        head = newNode;
-        newNode->next = head;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next != head)
-        temp = temp->next;
-
-    temp->next = newNode;
-    newNode->next = head;
-}
-
-// b. Insert at beginning
-void insertBeginning(Node*& head, int val) {
-    Node* newNode = new Node(val);
-    if (!head) {
-        head = newNode;
-        newNode->next = head;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next != head)
-        temp = temp->next;
-
-    temp->next = newNode;
-    newNode->next = head;
-    head = newNode;
-}
-
-// c. Insert at given position
-void insertAtPosition(Node*& head, int val, int pos) {
-    if (pos < 1) {
-        cout << "Invalid position.\n";
-        return;
-    }
-
-    if (pos == 1) {
-        insertBeginning(head, val);
-        return;
-    }
-
-    Node* newNode = new Node(val);
-    Node* temp = head;
-
-    for (int i = 1; i < pos - 1 && temp->next != head; i++)
-        temp = temp->next;
-
-    newNode->next = temp->next;
-    temp->next = newNode;
-}
-
-// d. Delete any node by value
-void deleteNode(Node*& head, int val) {
+void deleteValue(Node*& head, int val) {
     if (!head) {
         cout << "List is empty.\n";
         return;
     }
 
-    Node *curr = head, *prev = NULL;
-
-    // Case 1: head node to be deleted
-    if (curr->data == val) {
-        // Only one node case
-        if (curr->next == head) {
-            delete curr;
-            head = NULL;
-            return;
-        }
-
-        // Find last node
-        Node* last = head;
-        while (last->next != head)
-            last = last->next;
-
-        last->next = head->next;
+    
+    if (head->data == val) {
+        Node* toDelete = head;
         head = head->next;
-        delete curr;
+        delete toDelete;
+        cout << val << " deleted from the list.\n";
         return;
     }
 
-    // Case 2: non-head node
-    do {
-        prev = curr;
-        curr = curr->next;
-    } while (curr != head && curr->data != val);
+    Node* temp = head;
+    while (temp->next != NULL && temp->next->data != val)
+        temp = temp->next;
 
-    if (curr == head) {
-        cout << "Value " << val << " not found in list.\n";
+    if (temp->next == NULL) {
+        cout << "Value " << val << " not found in the list.\n";
         return;
     }
 
-    prev->next = curr->next;
-    delete curr;
+    Node* toDelete = temp->next;
+    temp->next = temp->next->next;
+    delete toDelete;
+
+    cout << val << " deleted from the list.\n";
 }
 
 int main() {
     Node* head = NULL;
 
-    // Insert at end
-    insertEnd(head, 10);
-    insertEnd(head, 20);
-    insertEnd(head, 30);
-    insertEnd(head, 40);
+    
+    int arr[] = {10, 20, 30, 40, 50};
+    for (int i =0;i<5;i++){
+        insertEnd(head, arr[i]);
+    	
+	}
+    
 
-    cout << "Initial list:\n";
+    cout << "Original List:\n";
     display(head);
 
-    
-    insertBeginning(head, 5);
-    cout << "\nAfter inserting 5 at beginning:\n";
-    display(head);
+    int val;
+    cout << "\nEnter value to delete: ";
+    cin >> val;
 
-    
-    insertAtPosition(head, 25, 4);
-    cout << "\nAfter inserting 25 at position 4:\n";
-    display(head);
+    deleteValue(head, val);
 
-    
-    deleteNode(head, 20);
-    cout << "\nAfter deleting 20:\n";
+    cout << "\nUpdated List:\n";
     display(head);
 
     return 0;
 }
-
